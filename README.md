@@ -1,40 +1,55 @@
-# aconfig-py
-Configuration framework in Python for Watson-NLU services.
+# Alchemy Config
+The `aconfig` library provides simple `yaml` configuration in `python` with environment-based overrides.
 
-# How to Get Started
+## Installation
 
-1. Make sure you have `pip3` installed.
-2. Sync with project using `pip3`:
-```
-# make sure you are in aconfig-py directory
+To install, simply use `pip`
 
-# install requirements
-pip3 install -r requirements.txt
+```sh
+pip install alchemy-config
 ```
 
-# Run unit tests
+## Quick Start
 
-1. Run:
-```
-./ci/run_tests.sh
+**config.yaml**
+```yaml
+foo: 1
+bar:
+    baz: "bat"
 ```
 
-# Corner-case Behavior
+**main.py**
+```py
+import aconfig
+
+if __name__ == "__main__":
+    config = aconfig.Config.from_yaml("config.yaml")
+    print(config.foo)
+    print(config.bar.baz)
+```
+
+```sh
+export BAR_BAX="buz"
+python3 main.py
+```
+
+## Corner-case Behavior
 
 You CAN set builtin method names as attributes on the `config`. However, you should only access/delete them via dictionary access methods.
 
 For example:
 
-```
-c = {'update': True}
+```py
+import aconfig
+cfg = {"update": True}
 
-config = Config(c)
+config = aconfig.Config(cfg)
 
 # DO NOT DO THIS:
 config.update
 
 # DO THIS INSTEAD:
-config['update']
+config["update"]
 ```
 
-This is because there is no way in Python to tell whether you want the method or the attribute `'update'` when "getting" it from the object.
+This is because there is no way in Python to tell whether you want the method or the attribute `"update"` when "getting" it from the object.
