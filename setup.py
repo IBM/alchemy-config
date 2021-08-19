@@ -9,25 +9,27 @@
 import os
 from setuptools import setup, find_packages
 
-with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'README.md')) as f:
+with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), "README.md")) as f:
     long_description = f.read()
 
-with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'LICENSE')) as f:
-    license = f.read()
-
-with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'requirements.txt')) as f:
+with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), "requirements.txt")) as f:
     requirements = f.readlines()
 
+# Read version from the env
+version = os.environ.get("RELEASE_VERSION")
+assert version is not None, "Must set RELEASE_VERSION"
+
 setup(
-    name='aconfig',
-    version='1.0.3',
-    description='Configuration framework in Python for general configuration use.',
+    name="alchemy-config",
+    version=version,
+    description="Configuration framework in Python for general configuration use.",
+    long_description_content_type="text/markdown",
     long_description=long_description,
-    url='https://github.ibm.com/watson-nlu/aconfig-py',
-    author='Ethan Koch - IBM Watson',
-    author_email='ethankoch@ibm.com',
-    license=license,
-    keywords='config',
-    packages=['aconfig'],
+    url="https://github.com/IBM/alchemy-config",
+    author="Gabe Goodhart",
+    author_email="gabe.l.hart@gmail.com",
+    license="MIT",
+    keywords="config",
+    packages=["aconfig"],
     install_requires=requirements,
 )
