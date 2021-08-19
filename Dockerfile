@@ -46,7 +46,7 @@ RUN ./ci/publish.sh
 FROM base as release_test
 ARG RELEASE_VERSION
 ARG RELEASE_DRY_RUN
-COPY ./tests /src/tests
+COPY ./test /src/test
 COPY ./ci/run-tests.sh /src/ci/run-tests.sh
 RUN true && \
     ([ "$RELEASE_DRY_RUN" != "true" ] && sleep 90 || true) && \

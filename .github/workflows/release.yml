@@ -12,10 +12,4 @@ jobs:
       - name: Run release
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: |
-          tag=$(echo $REF | cut -d'/' -f3-)
-          echo "Releasing version ${tag}"
-          docker build . \
-            --target=release_test \
-            --build-arg RELEASE_VERSION=${tag} \
-            --build-arg PYPI_TOKEN=${PYPI_TOKEN}
+        run: REF="${{ github.ref }}" ./ci/release.sh
