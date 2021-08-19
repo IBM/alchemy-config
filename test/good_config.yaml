@@ -1,0 +1,12 @@
+key1:
+  key2:
+    int_key: 1
+  key3:
+    key4:
+      float_key: 3.14
+  str_key: "string"
+  list_key:
+    - 0
+    - 1
+    - 2
+    - 3
