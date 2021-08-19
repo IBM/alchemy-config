@@ -1,0 +1,21 @@
+# This workflow runs the typescript implementation unit tests
+name: release
+on:
+  release:
+    types: [published]
+  workflow_dispatch: {}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run release
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          tag=$(echo $REF | cut -d'/' -f3-)
+          echo "Releasing version ${tag}"
+          docker build . \
+            --target=release_test \
+            --build-arg RELEASE_VERSION=${tag} \
+            --build-arg PYPI_TOKEN=${PYPI_TOKEN}

@@ -1,5 +1,5 @@
 # This workflow runs the typescript implementation unit tests
-name: python-tests
+name: tests
 on:
   push:
     branches: [ main ]
