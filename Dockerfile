@@ -49,7 +49,7 @@ ARG RELEASE_DRY_RUN
 COPY ./tests /src/tests
 COPY ./ci/run-tests.sh /src/ci/run-tests.sh
 RUN true && \
-    ([ "$RELEASE_DRY_RUN" != "true" ] && sleep 30 || true) && \
+    ([ "$RELEASE_DRY_RUN" != "true" ] && sleep 90 || true) && \
     pip install alchemy-config==${RELEASE_VERSION} && \
     ./ci/run-tests.sh && \
     true
