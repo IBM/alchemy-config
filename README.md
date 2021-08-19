@@ -29,7 +29,7 @@ if __name__ == "__main__":
 ```
 
 ```sh
-export BAR_BAX="buz"
+export BAR_BAZ="buz"
 python3 main.py
 ```
 
