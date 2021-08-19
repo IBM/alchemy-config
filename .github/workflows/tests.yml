@@ -12,8 +12,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run unit tests
-        run: |
-          pip install -r requirements.txt
-          pip install -r requirements_test.txt
-          python setup.py develop
-          ./ci/run-tests.sh
+        run: docker build . --target=test
