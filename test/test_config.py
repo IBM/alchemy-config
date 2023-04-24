@@ -231,6 +231,6 @@ class TestConfig(unittest.TestCase):
         assert yaml_dump == yaml_safe_dump
 
         # Load both ways
-        yaml_loaded = yaml.load(yaml_dump)
+        yaml_loaded = yaml.full_load(yaml_dump)
         yaml_safe_loaded = yaml.safe_load(yaml_dump)
         assert yaml_loaded == yaml_safe_loaded
