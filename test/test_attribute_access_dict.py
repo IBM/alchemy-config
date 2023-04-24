@@ -213,3 +213,21 @@ class TestAttributeAccessDict(unittest.TestCase):
 
         self.assertNotEqual(aad.update, None)
         self.assertNotIn('update', aad)
+
+    def test_immutable_flat_access_dict(self):
+        '''Test that frozen flat access dict cannot be changed
+        '''
+        flat_dict = aconfig.AttributeAccessDict(fixtures.GOOD_FLAT_DICT, frozen=True)
+        self.assertIsInstance(flat_dict, aconfig.AttributeAccessDict)
+
+        with self.assertRaises(TypeError):
+            flat_dict['str_key'] = 'new_key'
+    
+    def test_immutable_nested_access_dict(self):
+        '''Test that frozen nested access dict cannot be changed
+        '''
+        flat_dict = aconfig.AttributeAccessDict(fixtures.GOOD_NESTED_DICT, frozen=True)
+        self.assertIsInstance(flat_dict, aconfig.AttributeAccessDict)
+
+        with self.assertRaises(TypeError):
+            flat_dict['key2']['key4'] = 'new_key'
