@@ -234,3 +234,30 @@ class TestConfig(unittest.TestCase):
         yaml_loaded = yaml.full_load(yaml_dump)
         yaml_safe_loaded = yaml.safe_load(yaml_dump)
         assert yaml_loaded == yaml_safe_loaded
+
+    def test_immutable_config(self):
+        cfg = aconfig.ImmutableConfig({'a': {'b': [{'c': 1}]}})
+        self.assertEqual(cfg.a.b[0].c, 1)
+
+        with self.assertRaises(TypeError):
+            cfg.a.b[0].c = 2
+        with self.assertRaises(TypeError):
+            cfg.a.b = [1, 2, 3]
+        with self.assertRaises(TypeError):
+            cfg.a = 1
+
+    def test_immutable_config_with_env_overrides(self):
+        # set an environment
+        os.environ['KEY1'] = '12345678'
+        cfg = aconfig.ImmutableConfig({"key1": 1, "key2": 2}, override_env_vars=True)
+
+        assert cfg.key2 == 2
+        assert cfg.key1 == 12345678
+        with self.assertRaises(TypeError):
+            cfg.key1 = 1
+
+    def test_immutable_config_from_mutable_config(self):
+        cfg = aconfig.Config({'a': {'b': [{'c': 1}]}})
+        immutable_config = aconfig.ImmutableConfig(cfg)
+
+        assert cfg == immutable_config
