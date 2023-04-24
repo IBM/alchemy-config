@@ -221,6 +221,12 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(cfg.a.b[0].c, 1)
         self.assertEqual(cfg_copy.a.b[0].c, 2)
 
+        immutable_cfg = aconfig.ImmutableConfig(cfg)
+        immutable_cfg_copy = copy.deepcopy(immutable_cfg)
+        self.assertIsInstance(immutable_cfg_copy, aconfig.ImmutableConfig)
+        self.assertEqual(immutable_cfg_copy, immutable_cfg)
+        self.assertIsNot(immutable_cfg_copy, immutable_cfg)
+
     def test_yaml_dump(self):
         '''Test yaml.dump(config) works'''
         loaded_yaml = aconfig.Config.from_yaml(fixtures.GOOD_CONFIG_LOCATION)

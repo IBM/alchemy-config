@@ -48,6 +48,9 @@ class AttributeAccessDict(dict):
 
     @classmethod
     def _make_attribute_access_dict(cls, value):
+        """Recursively walk down any `dict`s or `list`s and build attribute access dicts
+        🌶️🌶️🌶️: This is a classmethod so that inheritance is respected.
+        """
         if isinstance(value, cls):
             return value
         elif isinstance(value, dict):
@@ -87,8 +90,15 @@ class AttributeAccessDict(dict):
 
 
 class ImmutableAttributeAccessDict(AttributeAccessDict):
+    """This class subclasses AttributeAccessDict and removes the setters,
+    to allow the creation of immutable dicts.
+
+    Using inheritance this way allows the dicts to be recursively created via
+    AttributeAccessDict, while maintaining nested immutability.
+    """
 
     def __init__(self, input_map, *_):
+        """See :func:`~aconfig.aconfig.AttributeAccessDict.__init__`"""
         assert isinstance(input_map, dict), \
             '`input_map` argument should be of type dict, but found type: <{0}>'.format(
                 type(input_map))
@@ -100,10 +110,10 @@ class ImmutableAttributeAccessDict(AttributeAccessDict):
         super().__init__(input_map)
 
     def __setitem__(self, key, value):
-        raise TypeError("Nope")
+        raise TypeError("ImmutableAttributeAccessDict does not support item assignment")
 
     def __setattr__(self, key, value):
-        raise TypeError("Nope")
+        raise TypeError("ImmutableAttributeAccessDict does not support item assignment")
 
 
 class Config(AttributeAccessDict):
@@ -315,7 +325,9 @@ class Config(AttributeAccessDict):
 
 
 class ImmutableConfig(ImmutableAttributeAccessDict, Config):
+    """This class is the Immutable version of Config"""
     def __init__(self, config, override_env_vars=True):
+        """See :func:`~aconfig.aconfig.Config.__init__`"""
         assert isinstance(config, dict)
         super().__init__(config, override_env_vars)
 
