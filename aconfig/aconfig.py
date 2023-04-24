@@ -113,7 +113,7 @@ class ImmutableAttributeAccessDict(AttributeAccessDict):
         raise TypeError("ImmutableAttributeAccessDict does not support item assignment")
 
     def __setattr__(self, key, value):
-        raise TypeError("ImmutableAttributeAccessDict does not support item assignment")
+        raise AttributeError("ImmutableAttributeAccessDict does not support attribute assignment")
 
 
 class Config(AttributeAccessDict):
