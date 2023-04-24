@@ -245,11 +245,11 @@ class TestConfig(unittest.TestCase):
         cfg = aconfig.ImmutableConfig({'a': {'b': [{'c': 1}]}})
         self.assertEqual(cfg.a.b[0].c, 1)
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(AttributeError):
             cfg.a.b[0].c = 2
-        with self.assertRaises(TypeError):
+        with self.assertRaises(AttributeError):
             cfg.a.b = [1, 2, 3]
-        with self.assertRaises(TypeError):
+        with self.assertRaises(AttributeError):
             cfg.a = 1
 
     def test_immutable_config_with_env_overrides(self):
@@ -259,7 +259,7 @@ class TestConfig(unittest.TestCase):
 
         assert cfg.key2 == 2
         assert cfg.key1 == 12345678
-        with self.assertRaises(TypeError):
+        with self.assertRaises(AttributeError):
             cfg.key1 = 1
 
     def test_immutable_config_from_mutable_config(self):

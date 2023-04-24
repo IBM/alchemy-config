@@ -32,9 +32,9 @@ class AttributeAccessDict(dict):
                 overrides dict's methods to enable this. Can be modified later on and keep the same
                 behavior.
         '''
-        assert isinstance(input_map, dict), \
-            '`input_map` argument should be of type dict, but found type: <{0}>'.format(
-                type(input_map))
+        if not isinstance(input_map, dict):
+            raise TypeError('`input_map` argument should be of type dict, but found type: <{0}>'.format(
+                type(input_map)))
 
         # copy so as not to modify passed in dictionary
         copied_map = copy.deepcopy(input_map)
@@ -99,9 +99,9 @@ class ImmutableAttributeAccessDict(AttributeAccessDict):
 
     def __init__(self, input_map, *_):
         """See :func:`~aconfig.aconfig.AttributeAccessDict.__init__`"""
-        assert isinstance(input_map, dict), \
-            '`input_map` argument should be of type dict, but found type: <{0}>'.format(
-                type(input_map))
+        if not isinstance(input_map, dict):
+            raise TypeError('`input_map` argument should be of type dict, but found type: <{0}>'.format(
+                type(input_map)))
         # 🌶️🌶️🌶️: we explicitly cast back down to `dict` for the immutable case
         # If we were to build an immutable dict from the top-down, that would
         # obviously fail.
@@ -110,7 +110,7 @@ class ImmutableAttributeAccessDict(AttributeAccessDict):
         super().__init__(input_map)
 
     def __setitem__(self, key, value):
-        raise TypeError("ImmutableAttributeAccessDict does not support item assignment")
+        raise AttributeError("ImmutableAttributeAccessDict does not support attribute assignment")
 
     def __setattr__(self, key, value):
         raise AttributeError("ImmutableAttributeAccessDict does not support attribute assignment")
@@ -328,7 +328,8 @@ class ImmutableConfig(ImmutableAttributeAccessDict, Config):
     """This class is the Immutable version of Config"""
     def __init__(self, config, override_env_vars=True):
         """See :func:`~aconfig.aconfig.Config.__init__`"""
-        assert isinstance(config, dict)
+        if not isinstance(config, dict):
+            raise TypeError("config must be a dict")
         super().__init__(config, override_env_vars)
 
 

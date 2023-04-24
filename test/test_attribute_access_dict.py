@@ -33,11 +33,11 @@ class TestAttributeAccessDict(unittest.TestCase):
     def test__init__fail(self):
         '''Test that initialization will fail with invalid dict's.
         '''
-        with self.assertRaises(AssertionError) as ex:
+        with self.assertRaises(TypeError) as ex:
             bad_dict = aconfig.AttributeAccessDict(['a', 'list', 'of', 'strings'])
 
         raised_exception = ex.exception
-        self.assertIsInstance(raised_exception, AssertionError)
+        self.assertIsInstance(raised_exception, TypeError)
 
         # make sure bad_dict was NOT initialized
         self.assertEqual(getattr(locals(), 'bad_dict', None), None)
@@ -220,7 +220,7 @@ class TestAttributeAccessDict(unittest.TestCase):
         flat_dict = aconfig.ImmutableAttributeAccessDict(fixtures.GOOD_FLAT_DICT)
         self.assertIsInstance(flat_dict, aconfig.AttributeAccessDict)
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(AttributeError):
             flat_dict['str_key'] = 'new_key'
     
     def test_immutable_nested_access_dict(self):
@@ -229,5 +229,5 @@ class TestAttributeAccessDict(unittest.TestCase):
         flat_dict = aconfig.ImmutableAttributeAccessDict(fixtures.GOOD_NESTED_DICT)
         self.assertIsInstance(flat_dict, aconfig.AttributeAccessDict)
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(AttributeError):
             flat_dict['key2']['key4'] = 'new_key'
