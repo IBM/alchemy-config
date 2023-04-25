@@ -32,28 +32,31 @@ class AttributeAccessDict(dict):
                 overrides dict's methods to enable this. Can be modified later on and keep the same
                 behavior.
         '''
-        assert isinstance(input_map, dict), \
-            '`input_map` argument should be of type dict, but found type: <{0}>'.format(
-                type(input_map))
+        if not isinstance(input_map, dict):
+            raise TypeError('`input_map` argument should be of type dict, but found type: <{0}>'.format(
+                type(input_map)))
 
         # copy so as not to modify passed in dictionary
         copied_map = copy.deepcopy(input_map)
 
         # recursively instantiate sub-dicts
         for key, value in copied_map.items():
-            copied_map[key] = AttributeAccessDict._make_attribute_access_dict(value)
+            copied_map[key] = self.__class__._make_attribute_access_dict(value)
 
         # make it accessible like native Python dict
         super().__init__(**copied_map)
 
-    @staticmethod
-    def _make_attribute_access_dict(value):
-        if isinstance(value, AttributeAccessDict):
+    @classmethod
+    def _make_attribute_access_dict(cls, value):
+        """Recursively walk down any `dict`s or `list`s and build attribute access dicts
+        🌶️🌶️🌶️: This is a classmethod so that inheritance is respected.
+        """
+        if isinstance(value, cls):
             return value
         elif isinstance(value, dict):
-            return AttributeAccessDict(value)
+            return cls(value)
         elif isinstance(value, list):
-            return [AttributeAccessDict._make_attribute_access_dict(v) for v in value]
+            return [cls._make_attribute_access_dict(v) for v in value]
         else:
             return value
 
@@ -83,7 +86,35 @@ class AttributeAccessDict(dict):
         '''This enables deepcopy to successfully copy a Config object, despite
         the default value semantics
         '''
-        return AttributeAccessDict(copy.deepcopy(dict(self)))
+        return self.__class__(copy.deepcopy(dict(self)))
+
+
+class ImmutableAttributeAccessDict(AttributeAccessDict):
+    """This class subclasses AttributeAccessDict and removes the setters,
+    to allow the creation of immutable dicts.
+
+    Using inheritance this way allows the dicts to be recursively created via
+    AttributeAccessDict, while maintaining nested immutability.
+    """
+
+    def __init__(self, input_map, *_):
+        """See :func:`~aconfig.aconfig.AttributeAccessDict.__init__`"""
+        if not isinstance(input_map, dict):
+            raise TypeError('`input_map` argument should be of type dict, but found type: <{0}>'.format(
+                type(input_map)))
+        # 🌶️🌶️🌶️: we explicitly cast back down to `dict` for the immutable case
+        # If we were to build an immutable dict from the top-down, that would
+        # obviously fail.
+        input_map = dict(input_map)
+        # Invoke the AttributeAccessDict initializer
+        super().__init__(input_map)
+
+    def __setitem__(self, key, value):
+        raise TypeError("ImmutableAttributeAccessDict does not support item assignment")
+
+    def __setattr__(self, key, value):
+        raise AttributeError("ImmutableAttributeAccessDict does not support attribute assignment")
+
 
 class Config(AttributeAccessDict):
     '''Config which holds the configurations at the given config location.
@@ -291,6 +322,15 @@ class Config(AttributeAccessDict):
         '''
 
         return re.sub(self._search_pattern, '_', config_key.upper())
+
+
+class ImmutableConfig(ImmutableAttributeAccessDict, Config):
+    """This class is the Immutable version of Config"""
+    def __init__(self, config, override_env_vars=True):
+        """See :func:`~aconfig.aconfig.Config.__init__`"""
+        if not isinstance(config, dict):
+            raise TypeError("config must be a dict")
+        super().__init__(config, override_env_vars)
 
 
 ## yaml representation safe ########################################################################

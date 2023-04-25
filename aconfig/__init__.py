@@ -8,4 +8,4 @@
 '''Enable calls to desired components of package.
 '''
 
-from .aconfig import AttributeAccessDict, Config
+from .aconfig import AttributeAccessDict, Config, ImmutableAttributeAccessDict, ImmutableConfig

@@ -221,6 +221,12 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(cfg.a.b[0].c, 1)
         self.assertEqual(cfg_copy.a.b[0].c, 2)
 
+        immutable_cfg = aconfig.ImmutableConfig(cfg)
+        immutable_cfg_copy = copy.deepcopy(immutable_cfg)
+        self.assertIsInstance(immutable_cfg_copy, aconfig.ImmutableConfig)
+        self.assertEqual(immutable_cfg_copy, immutable_cfg)
+        self.assertIsNot(immutable_cfg_copy, immutable_cfg)
+
     def test_yaml_dump(self):
         '''Test yaml.dump(config) works'''
         loaded_yaml = aconfig.Config.from_yaml(fixtures.GOOD_CONFIG_LOCATION)
@@ -231,6 +237,33 @@ class TestConfig(unittest.TestCase):
         assert yaml_dump == yaml_safe_dump
 
         # Load both ways
-        yaml_loaded = yaml.load(yaml_dump)
+        yaml_loaded = yaml.full_load(yaml_dump)
         yaml_safe_loaded = yaml.safe_load(yaml_dump)
         assert yaml_loaded == yaml_safe_loaded
+
+    def test_immutable_config(self):
+        cfg = aconfig.ImmutableConfig({'a': {'b': [{'c': 1}]}})
+        self.assertEqual(cfg.a.b[0].c, 1)
+
+        with self.assertRaises(AttributeError):
+            cfg.a.b[0].c = 2
+        with self.assertRaises(AttributeError):
+            cfg.a.b = [1, 2, 3]
+        with self.assertRaises(AttributeError):
+            cfg.a = 1
+
+    def test_immutable_config_with_env_overrides(self):
+        # set an environment
+        os.environ['KEY1'] = '12345678'
+        cfg = aconfig.ImmutableConfig({"key1": 1, "key2": 2}, override_env_vars=True)
+
+        assert cfg.key2 == 2
+        assert cfg.key1 == 12345678
+        with self.assertRaises(AttributeError):
+            cfg.key1 = 1
+
+    def test_immutable_config_from_mutable_config(self):
+        cfg = aconfig.Config({'a': {'b': [{'c': 1}]}})
+        immutable_config = aconfig.ImmutableConfig(cfg)
+
+        assert cfg == immutable_config
