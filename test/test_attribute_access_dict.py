@@ -220,7 +220,7 @@ class TestAttributeAccessDict(unittest.TestCase):
         flat_dict = aconfig.ImmutableAttributeAccessDict(fixtures.GOOD_FLAT_DICT)
         self.assertIsInstance(flat_dict, aconfig.AttributeAccessDict)
 
-        with self.assertRaises(AttributeError):
+        with self.assertRaises(TypeError):
             flat_dict['str_key'] = 'new_key'
     
     def test_immutable_nested_access_dict(self):
@@ -229,5 +229,14 @@ class TestAttributeAccessDict(unittest.TestCase):
         flat_dict = aconfig.ImmutableAttributeAccessDict(fixtures.GOOD_NESTED_DICT)
         self.assertIsInstance(flat_dict, aconfig.AttributeAccessDict)
 
-        with self.assertRaises(AttributeError):
+        with self.assertRaises(TypeError):
             flat_dict['key2']['key4'] = 'new_key'
+
+    def test_immutable_dict_attr(self):
+        '''Test that immutable dict cannot be changed via attribute
+        '''
+        flat_dict = aconfig.ImmutableAttributeAccessDict(fixtures.GOOD_FLAT_DICT)
+        self.assertIsInstance(flat_dict, aconfig.AttributeAccessDict)
+
+        with self.assertRaises(AttributeError):
+            flat_dict.str_key = 'new_key'

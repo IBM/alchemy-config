@@ -110,7 +110,7 @@ class ImmutableAttributeAccessDict(AttributeAccessDict):
         super().__init__(input_map)
 
     def __setitem__(self, key, value):
-        raise AttributeError("ImmutableAttributeAccessDict does not support attribute assignment")
+        raise TypeError("ImmutableAttributeAccessDict does not support item assignment")
 
     def __setattr__(self, key, value):
         raise AttributeError("ImmutableAttributeAccessDict does not support attribute assignment")
