@@ -11,9 +11,11 @@
 import os
 import re
 import copy
+import typing
 
 from yaml.representer import SafeRepresenter
 import yaml
+
 
 class AttributeAccessDict(dict):
     '''Wrapper around Python dict to make it accessible like an object.
@@ -49,16 +51,25 @@ class AttributeAccessDict(dict):
     @classmethod
     def _make_attribute_access_dict(cls, value):
         """Recursively walk down any `dict`s or `list`s and build attribute access dicts
-        🌶️🌶️🌶️: This is a classmethod so that inheritance is respected.
+        🌶️: This is a classmethod so that inheritance is respected.
+        🌶️🌶️🌶️: We don't call the `cls` initializer directly for the recursion, because we
+        don't want the `Config` class or its subclasses to be initialized multiple times.
+        Instead, we ask _recursive_dict_class() to return the (sub)class that should be used.
         """
-        if isinstance(value, cls):
+        recursive_class = cls._recursive_dict_class()
+        if isinstance(value, recursive_class):
             return value
         elif isinstance(value, dict):
-            return cls(value)
+            return recursive_class(value)
         elif isinstance(value, list):
-            return [cls._make_attribute_access_dict(v) for v in value]
+            return [recursive_class._make_attribute_access_dict(v) for v in value]
         else:
             return value
+
+    @classmethod
+    def _recursive_dict_class(cls) -> typing.Type['AttributeAccessDict']:
+        """Returns the class to be used to recursively build the config object"""
+        return AttributeAccessDict
 
     # BELOW MAKES INSTANCE ACCESSIBLE VIA NATIVE PYTHON DICT METHODS ###############################
 
@@ -114,6 +125,11 @@ class ImmutableAttributeAccessDict(AttributeAccessDict):
 
     def __setattr__(self, key, value):
         raise AttributeError("ImmutableAttributeAccessDict does not support attribute assignment")
+
+    @classmethod
+    def _recursive_dict_class(cls) -> typing.Type['AttributeAccessDict']:
+        """Make this class available to recursively build a full config"""
+        return ImmutableAttributeAccessDict
 
 
 class Config(AttributeAccessDict):

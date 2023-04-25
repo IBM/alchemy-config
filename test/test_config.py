@@ -267,3 +267,19 @@ class TestConfig(unittest.TestCase):
         immutable_config = aconfig.ImmutableConfig(cfg)
 
         assert cfg == immutable_config
+
+    def test_config_can_be_subclassed(self):
+        """It should be valid to subclass Config if you want your own init semantics"""
+        class MyConfig(aconfig.Config):
+            init_count = 0
+
+            def __init__(self, config_dict: dict):
+                super().__init__(config_dict)
+                # The top-level config init should only be invoked once
+                MyConfig.init_count += 1
+
+        # So initializing this with a nested config dict shouldn't cause the initializer to run
+        # multiple times
+        MyConfig({"nest": {"a thing": "here"}})
+
+        self.assertEqual(MyConfig.init_count, 1)
