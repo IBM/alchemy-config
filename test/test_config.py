@@ -48,6 +48,7 @@ class TestConfig(unittest.TestCase):
             bad_config2 = aconfig.Config._verify_config_location(fixtures.BAD_CONFIG_LOCATION)
         raised_exception2 = ex2.exception
         self.assertIsInstance(raised_exception2, AssertionError)
+        self.assertIn(fixtures.BAD_CONFIG_LOCATION, str(ex2.exception))
         # make sure bad_config2 was NOT initialized
         self.assertEqual(getattr(locals(), 'bad_config2', None), None)
 
@@ -56,6 +57,7 @@ class TestConfig(unittest.TestCase):
             bad_config3 = aconfig.Config._verify_config_location(fixtures.NOT_YAML_CONFIG_LOCATION)
         raised_exception3 = ex3.exception
         self.assertIsInstance(raised_exception3, AssertionError)
+        self.assertIn(fixtures.NOT_YAML_CONFIG_LOCATION, str(ex3.exception))
         # make sure bad_config3 was NOT initialized
         self.assertEqual(getattr(locals(), 'bad_config3', None), None)
 
