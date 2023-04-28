@@ -213,10 +213,10 @@ class Config(AttributeAccessDict):
         config_location = os.path.normpath(config_location)
 
         assert (config_location.endswith('.yml') or config_location.endswith('.yaml')), \
-            'Must send in a .yaml or .yaml file'
+            'Must send in a .yaml or .yaml file, you sent in: <{0}>'.format(config_location)
 
         assert os.path.exists(config_location), \
-            'config_location does not exist or cannot be found!'
+            'config_location <{0}> does not exist or cannot be found!'.format(config_location)
 
         # finally found it's valid
         return config_location
