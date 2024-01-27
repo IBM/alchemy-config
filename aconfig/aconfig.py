@@ -11,16 +11,16 @@
 import os
 import re
 import copy
-import typing
+from typing import Optional, Any, Type
 
 from yaml.representer import SafeRepresenter
 import yaml
 
 
-class AttributeAccessDict(dict):
+class AttributeAccessDict(dict[str, Any]):
     '''Wrapper around Python dict to make it accessible like an object.
     '''
-    def __init__(self, input_map):
+    def __init__(self, input_map:dict[str, Any]):
         '''Recursively assign attribute access and call parent __init__ as well.
 
         Args:
@@ -49,7 +49,7 @@ class AttributeAccessDict(dict):
         super().__init__(**copied_map)
 
     @classmethod
-    def _make_attribute_access_dict(cls, value):
+    def _make_attribute_access_dict(cls, value:Any):
         """Recursively walk down any `dict`s or `list`s and build attribute access dicts
         🌶️: This is a classmethod so that inheritance is respected.
         🌶️🌶️🌶️: We don't call the `cls` initializer directly for the recursion, because we
@@ -67,28 +67,28 @@ class AttributeAccessDict(dict):
             return value
 
     @classmethod
-    def _recursive_dict_class(cls) -> typing.Type['AttributeAccessDict']:
+    def _recursive_dict_class(cls) -> Type['AttributeAccessDict']:
         """Returns the class to be used to recursively build the config object"""
         return AttributeAccessDict
 
     # BELOW MAKES INSTANCE ACCESSIBLE VIA NATIVE PYTHON DICT METHODS ###############################
 
-    def __getattr__(self, key, default=None):
+    def __getattr__(self, key:str, default:Any=None):
         return super().get(key, default)
 
-    def __setattr__(self, key, value):
+    def __setattr__(self, key:str, value:Any):
         if isinstance(value, AttributeAccessDict):
             value = value
         elif isinstance(value, dict):
             value = AttributeAccessDict(value)
         super().__setitem__(key, value)
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key:str, value:Any):
         if isinstance(value, dict):
             value = AttributeAccessDict(value)
         super().__setitem__(key, value)
 
-    def __delattr__(self, key):
+    def __delattr__(self, key:str):
         super().__delitem__(key)
 
     # ABOVE MAKES INSTANCE ACCESSIBLE VIA NATIVE PYTHON DICT METHODS ###############################
@@ -108,7 +108,7 @@ class ImmutableAttributeAccessDict(AttributeAccessDict):
     AttributeAccessDict, while maintaining nested immutability.
     """
 
-    def __init__(self, input_map, *_):
+    def __init__(self, input_map:dict[str, Any], *_):
         """See :func:`~aconfig.aconfig.AttributeAccessDict.__init__`"""
         if not isinstance(input_map, dict):
             raise TypeError('`input_map` argument should be of type dict, but found type: <{0}>'.format(
@@ -120,14 +120,14 @@ class ImmutableAttributeAccessDict(AttributeAccessDict):
         # Invoke the AttributeAccessDict initializer
         super().__init__(input_map)
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key:str, value:Any):
         raise TypeError("ImmutableAttributeAccessDict does not support item assignment")
 
-    def __setattr__(self, key, value):
+    def __setattr__(self, key:str, value:Any):
         raise AttributeError("ImmutableAttributeAccessDict does not support attribute assignment")
 
     @classmethod
-    def _recursive_dict_class(cls) -> typing.Type['AttributeAccessDict']:
+    def _recursive_dict_class(cls) -> Type['AttributeAccessDict']:
         """Make this class available to recursively build a full config"""
         return ImmutableAttributeAccessDict
 
@@ -137,7 +137,7 @@ class Config(AttributeAccessDict):
     '''
     _search_pattern = re.compile('[.-]')
 
-    def __init__(self, config, override_env_vars=True):
+    def __init__(self, config:dict[str, Any], override_env_vars:bool=True):
         '''
 
         NOTE:
@@ -169,7 +169,7 @@ class Config(AttributeAccessDict):
         super().__init__(updated_config)
 
     @classmethod
-    def from_yaml(cls, config_location=None, **kwargs):
+    def from_yaml(cls, config_location:str, **kwargs:Any):
         '''Load a config definition at specified location, parse it, and get environment var's.
 
         Args:
@@ -192,7 +192,7 @@ class Config(AttributeAccessDict):
         return cls(loaded_config, **kwargs)
 
     @staticmethod
-    def _verify_config_location(config_location):
+    def _verify_config_location(config_location: str):
         '''Check to see if config location exists and is a .yaml file.
         NOTE: enforces .yaml extension.
 
@@ -222,7 +222,7 @@ class Config(AttributeAccessDict):
         return config_location
 
     @staticmethod
-    def _load_yaml_file(config_location):
+    def _load_yaml_file(config_location:str):
         '''Helper to load .yaml file at location. Assumes file location has been validated.
 
         Args:
@@ -240,7 +240,7 @@ class Config(AttributeAccessDict):
         return dict(loaded_config)
 
     @staticmethod
-    def _eval_value(candidate_value):
+    def _eval_value(candidate_value: str):
         '''Logic to convert str version of given value into Python data type. Used for env. var's.
 
         Args:
@@ -281,7 +281,7 @@ class Config(AttributeAccessDict):
         # last chance -- return as string
         return str(candidate_value)
 
-    def _update_with_env_vars(self, default_dict, prefix=None):
+    def _update_with_env_vars(self, default_dict:dict[str, Any], prefix:Optional[str]=None):
         '''Recursively update defaults with env. var's. Used for nested updating of dictionaries.
 
         Args:
@@ -323,7 +323,7 @@ class Config(AttributeAccessDict):
         # values have now been overriden where possible!
         return default_dict
 
-    def _env_var_from_key(self, config_key):
+    def _env_var_from_key(self, config_key:str):
         '''Convert a config key to the corresponding env var to check for.
 
         Args:
@@ -342,7 +342,7 @@ class Config(AttributeAccessDict):
 
 class ImmutableConfig(ImmutableAttributeAccessDict, Config):
     """This class is the Immutable version of Config"""
-    def __init__(self, config, override_env_vars=True):
+    def __init__(self, config:dict[str, Any], override_env_vars:bool=True):
         """See :func:`~aconfig.aconfig.Config.__init__`"""
         if not isinstance(config, dict):
             raise TypeError("config must be a dict")
