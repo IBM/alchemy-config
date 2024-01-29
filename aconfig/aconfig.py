@@ -11,7 +11,7 @@
 import os
 import re
 import copy
-from typing import NoReturn, Optional, Any, Type, Dict
+from typing import NoReturn, Optional, Any, Type, Dict, Union
 
 from yaml.representer import SafeRepresenter
 import yaml
@@ -54,7 +54,7 @@ class AttributeAccessDict(Dict[str, Any]):
     @classmethod
     def _make_attribute_access_dict(
         cls, value: Any
-    ) -> "AttributeAccessDict" | list[Any] | Any:
+    ) -> Union["AttributeAccessDict", list[Any], Any]:
         """Recursively walk down any `dict`s or `list`s and build attribute access dicts
         🌶️: This is a classmethod so that inheritance is respected.
         🌶️🌶️🌶️: We don't call the `cls` initializer directly for the recursion, because we
@@ -259,7 +259,7 @@ class Config(AttributeAccessDict):
         return dict(loaded_config)
 
     @staticmethod
-    def _eval_value(candidate_value: str) -> int | float | str | bool:
+    def _eval_value(candidate_value: str) -> Union[int, float, str, bool]:
         """Logic to convert str version of given value into Python data type. Used for env. var's.
 
         Args:
