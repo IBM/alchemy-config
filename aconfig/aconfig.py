@@ -353,7 +353,7 @@ class Config(AttributeAccessDict):
         Args:
             config_key:  str
                 Key in config file that should be converted to the environment variable to search
-                for to override cofig_key's value with.
+                for to override config_key's value with.
 
         Returns:
             env_var_key:  str
