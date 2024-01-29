@@ -8,13 +8,13 @@
 """Handle all config-based operations.
 """
 
+import copy
 import os
 import re
-import copy
-from typing import NoReturn, Optional, Any, Type, Dict, Union
+from typing import Any, Dict, List, NoReturn, Optional, Type, Union
 
-from yaml.representer import SafeRepresenter
 import yaml
+from yaml.representer import SafeRepresenter
 
 
 class AttributeAccessDict(Dict[str, Any]):
@@ -54,7 +54,7 @@ class AttributeAccessDict(Dict[str, Any]):
     @classmethod
     def _make_attribute_access_dict(
         cls, value: Any
-    ) -> Union["AttributeAccessDict", list[Any], Any]:
+    ) -> Union["AttributeAccessDict", List[Any], Any]:
         """Recursively walk down any `dict`s or `list`s and build attribute access dicts
         🌶️: This is a classmethod so that inheritance is respected.
         🌶️🌶️🌶️: We don't call the `cls` initializer directly for the recursion, because we
