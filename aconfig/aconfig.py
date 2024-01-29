@@ -344,7 +344,7 @@ class Config(AttributeAccessDict):
                 # step 5: update default_dict with value
                 default_dict[default_key] = env_var_val
 
-        # values have now been overriden where possible!
+        # values have now been overridden where possible!
         return default_dict
 
     def _env_var_from_key(self, config_key: str) -> str:
