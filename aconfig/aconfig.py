@@ -241,7 +241,7 @@ class Config(AttributeAccessDict):
         return config_location
 
     @staticmethod
-    def _load_yaml_file(config_location: str) -> dict[Any, Any]:
+    def _load_yaml_file(config_location: str) -> Dict[Any, Any]:
         """Helper to load .yaml file at location. Assumes file location has been validated.
 
         Args:
