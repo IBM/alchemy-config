@@ -1,6 +1,11 @@
 # Alchemy Config
 The `aconfig` library provides simple `yaml` configuration in `python` with environment-based overrides.
 
+## Library advantages
+1. Easily reads environment variables with error handling, e.g. for absence of variables or boolean capitalization
+1. Allows users to easily access and traverse nested configuration without checking for key presence on every access
+1. Automatically handles overriding logic - environment variables take precedence over local configuration files
+
 ## Installation
 
 To install, simply use `pip`
