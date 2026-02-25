@@ -12,7 +12,7 @@ import unittest
 
 import aconfig
 
-from . import fixtures
+from test import fixtures
 
 
 # Unit tests #######################################################################################
@@ -222,7 +222,7 @@ class TestAttributeAccessDict(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             flat_dict['str_key'] = 'new_key'
-    
+
     def test_immutable_nested_access_dict(self):
         '''Test that immutable nested dict cannot be changed
         '''

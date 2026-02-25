@@ -18,7 +18,7 @@ import yaml
 
 import aconfig
 
-from . import fixtures
+from test import fixtures
 
 
 # Unit tests #######################################################################################
