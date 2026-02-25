@@ -363,6 +363,12 @@ class Config(AttributeAccessDict):
 
         return re.sub(self._search_pattern, "_", config_key.upper())
 
+    def __deepcopy__(self, memo) -> "AttributeAccessDict":
+        """This enables deepcopy to successfully copy a Config object, despite
+        the default value semantics
+        """
+        return self.__class__(copy.deepcopy(dict(self)), override_env_vars=False)
+
 
 class ImmutableConfig(ImmutableAttributeAccessDict, Config):
     """This class is the Immutable version of Config"""
