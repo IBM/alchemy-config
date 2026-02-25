@@ -8,6 +8,8 @@
 '''Test the methods of the AttributeAccessDict class.
 '''
 
+from unittest.mock import patch
+import os
 import unittest
 
 import aconfig
@@ -240,3 +242,18 @@ class TestAttributeAccessDict(unittest.TestCase):
 
         with self.assertRaises(AttributeError):
             flat_dict.str_key = 'new_key'
+
+    def test_attribute_access_dict_from_config(self):
+        '''Test that creating an AttributeAccessDict from a Config does not
+        apply env var overrides
+        '''
+        good_value = "yay"
+        bad_value = "some bad value"
+        cfg_dct = {"foo": good_value}
+        with patch.dict(os.environ, {"FOO": bad_value}):
+            # Create the config without env overrides
+            cfg = aconfig.Config(cfg_dct, override_env_vars=False)
+            self.assertEqual(cfg.foo, good_value)
+            # Create a secondary AttributeAccessDict from Config
+            aad = aconfig.AttributeAccessDict(cfg)
+            self.assertEqual(aad.foo, good_value)
