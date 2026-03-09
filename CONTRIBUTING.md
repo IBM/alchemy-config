@@ -46,20 +46,17 @@ Improvements to existing functionality are tracked as [GitHub issues using the U
 
 ## Development
 
-### Set up your dev environments
+### Set up your dev environment
 
 ```sh
-pip install -r requirements.txt
-pip install -r requirements_test.txt
-python setup.py develop
+uv sync --extra test
 ```
 
 ### Run unit tests
 
 ```sh
-./ci/run_tests.sh
+uv run pytest
 ```
-
 
 ## Your First Code Contribution
 
